@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"tickets_booking/helper"
 )
 
@@ -10,7 +9,16 @@ import (
 const conferenceTickets = 50
 var conferenceName = "Go Conference"
 var remainingTickets uint = 50
-var bookings = make([]map[string]string, 0) //List of maps with init size 0
+//var bookings = make([]map[string]string, 0) //List of maps with init size 0
+var bookings = make([]User, 0) //List of structs with init size 0
+
+// Create custom type
+type User struct {
+	firstName string
+	lastName string
+	email string
+	numberOfTickets uint
+}
 
 // go run main.go
 func main() {
@@ -75,7 +83,7 @@ func getFirstNames() []string {
 	for _, booking := range bookings {
 		// Splits by space
 		//var names = strings.Fields(booking)
-		firstNames = append(firstNames, booking["firstName"])
+		firstNames = append(firstNames, booking.firstName)
 	}
 
 	return firstNames
@@ -85,13 +93,20 @@ func bookTicket(firstName, lastName, email string, userTickets uint) {
 	remainingTickets = remainingTickets - userTickets
 
 	// Creates empty map with key string and value string
-	var userData = make(map[string]string)
-	userData["firstName"] = firstName
-	userData["lastName"] = lastName
-	userData["email"] = email
-	userData["numberOfTickets"] = strconv.FormatUint(uint64(userTickets), 10)
-
-	bookings = append(bookings, userData)
+	//var userData = make(map[string]string)
+	// userData["firstName"] = firstName
+	// userData["lastName"] = lastName
+	// userData["email"] = email
+	// userData["numberOfTickets"] = strconv.FormatUint(uint64(userTickets), 10)
+	
+	var user = User {
+		firstName: firstName,
+		lastName: lastName,
+		email: email,
+		numberOfTickets: userTickets,
+	}
+	
+	bookings = append(bookings, user)
 
 	fmt.Printf("Thank you %v %v for booking %v tickets.\n", firstName, lastName, userTickets)
 	fmt.Printf("%v tickets remaining for %v\n", remainingTickets, conferenceName)
