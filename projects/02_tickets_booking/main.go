@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"strings"
+	"strconv"
 	"tickets_booking/helper"
 )
 
@@ -10,13 +10,13 @@ import (
 const conferenceTickets = 50
 var conferenceName = "Go Conference"
 var remainingTickets uint = 50
-var bookings []string
+var bookings = make([]map[string]string, 0) //List of maps with init size 0
 
 // go run main.go
 func main() {
 	greetUsers()
 	helper.PrintConferenceName(conferenceName)
-	
+
 	for {
 		firstName, lastName, email, userTickets := getUserInput()
 		isValidName, isValidEmail, isValidTicketNumber := validateUserInput(firstName, lastName, email, userTickets)
@@ -74,8 +74,8 @@ func getFirstNames() []string {
 
 	for _, booking := range bookings {
 		// Splits by space
-		var names = strings.Fields(booking)
-		firstNames = append(firstNames, names[0])
+		//var names = strings.Fields(booking)
+		firstNames = append(firstNames, booking["firstName"])
 	}
 
 	return firstNames
@@ -83,7 +83,15 @@ func getFirstNames() []string {
 
 func bookTicket(firstName, lastName, email string, userTickets uint) {
 	remainingTickets = remainingTickets - userTickets
-	bookings = append(bookings, firstName + " " + lastName)
+
+	// Creates empty map with key string and value string
+	var userData = make(map[string]string)
+	userData["firstName"] = firstName
+	userData["lastName"] = lastName
+	userData["email"] = email
+	userData["numberOfTickets"] = strconv.FormatUint(uint64(userTickets), 10)
+
+	bookings = append(bookings, userData)
 
 	fmt.Printf("Thank you %v %v for booking %v tickets.\n", firstName, lastName, userTickets)
 	fmt.Printf("%v tickets remaining for %v\n", remainingTickets, conferenceName)
