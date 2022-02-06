@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"tickets_booking/helper"
 )
 
 // Package level variables need var and const, can not use :=
@@ -14,7 +15,8 @@ var bookings []string
 // go run main.go
 func main() {
 	greetUsers()
-
+	helper.PrintConferenceName(conferenceName)
+	
 	for {
 		firstName, lastName, email, userTickets := getUserInput()
 		isValidName, isValidEmail, isValidTicketNumber := validateUserInput(firstName, lastName, email, userTickets)
