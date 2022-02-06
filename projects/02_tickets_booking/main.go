@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sync"
 	"tickets_booking/helper"
 	"time"
 )
@@ -21,24 +22,28 @@ type User struct {
 	numberOfTickets uint
 }
 
+var wg = sync.WaitGroup{}
+
 // go run main.go
 func main() {
 	greetUsers()
 	helper.PrintConferenceName(conferenceName)
 
-	for {
+	// Main treat does not wait for other and these are canceled
+	// for {
 		firstName, lastName, email, userTickets := getUserInput()
 		isValidName, isValidEmail, isValidTicketNumber := validateUserInput(firstName, lastName, email, userTickets)
 
 		if isValidName && isValidEmail && isValidTicketNumber {
 			bookTicket(firstName, lastName, email, userTickets)			
 			//Go keyword creates a new treat
+			wg.Add(1) //Add one treat that main treat should wait
 			go sendTicket(firstName, lastName, email, userTickets)			
 			fmt.Printf("The first names of bookings are: %v\n", getFirstNames())
 
 			if (remainingTickets == 0) {
 				fmt.Println("Our conference is sold out.")
-				break
+				//break
 			}
 		} else {
 			if !isValidName {
@@ -51,7 +56,8 @@ func main() {
 				fmt.Println("Number of tickets entered is invalid")
 			}
 		}
-	}
+	//}
+	wg.Wait() // wait for all treats before you exit
 }
 
 
@@ -122,4 +128,5 @@ func sendTicket(firstName, lastName, email string, userTickets uint) {
 	fmt.Println("-----")
 	fmt.Printf("Sending ticket:\n%v\nto email address%v\n", ticket, email)
 	fmt.Println("-----")
+	wg.Done() // removes the treat from the waiting list
 }
