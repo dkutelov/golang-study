@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"tickets_booking/helper"
+	"time"
 )
 
 // Package level variables need var and const, can not use :=
@@ -31,6 +32,8 @@ func main() {
 
 		if isValidName && isValidEmail && isValidTicketNumber {
 			bookTicket(firstName, lastName, email, userTickets)			
+			//Go keyword creates a new treat
+			go sendTicket(firstName, lastName, email, userTickets)			
 			fmt.Printf("The first names of bookings are: %v\n", getFirstNames())
 
 			if (remainingTickets == 0) {
@@ -110,4 +113,13 @@ func bookTicket(firstName, lastName, email string, userTickets uint) {
 
 	fmt.Printf("Thank you %v %v for booking %v tickets.\n", firstName, lastName, userTickets)
 	fmt.Printf("%v tickets remaining for %v\n", remainingTickets, conferenceName)
+}
+
+// Run in separate threat
+func sendTicket(firstName, lastName, email string, userTickets uint) {	
+	time.Sleep(10 * time.Second)
+	var ticket = fmt.Sprintf("%v tickets for %v %v", userTickets, firstName, lastName)
+	fmt.Println("-----")
+	fmt.Printf("Sending ticket:\n%v\nto email address%v\n", ticket, email)
+	fmt.Println("-----")
 }
