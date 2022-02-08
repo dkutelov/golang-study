@@ -19,38 +19,43 @@ package main
 
 import (
 	"fmt"
-	"math"
 )
 	
+type Coordinate struct {
+	x, y int
+}
 
 type Rectangle struct {
-	x1,x2,x3,y1,y2,y3 float64
+	a Coordinate // top left
+	b Coordinate // bottom right
 }
 
-func getRectSides(rect Rectangle) (float64, float64) {
-	sideA := math.Sqrt(math.Pow(rect.x2 - rect.x1, 2) + math.Pow(rect.y2 - rect.y1, 2))
-	sideB := math.Sqrt(math.Pow(rect.x3 - rect.x2, 2) + math.Pow(rect.y3 - rect.y2, 2))
-
-	return sideA, sideB
+func width(r Rectangle) int {
+	return (r.b.x - r.a.x)
 }
 
-func getReactArea(rect Rectangle) float64 {
-	sideA, sideB := getRectSides(rect)
-	fmt.Println(sideA, sideB)
-	return sideA * sideB
+func length(r Rectangle) int {
+	return (r.a.y - r.b.y)
 }
 
-func getReactPerimeter(rect Rectangle) float64 {
-	sideA, sideB := getRectSides(rect)
-	return (sideA + sideB) * 2
+func area(r Rectangle) int {
+	return length(r) * width(r)
+}
+
+func perimeter(r Rectangle) int {
+	return width(r) * 2 + length(r) * 2
+}
+
+func printInfo(r Rectangle) {
+	fmt.Println("Area is:", area(r))
+	fmt.Println("Perimeter is:", perimeter(r))
 }
 
 func main() {
-	rect1 := Rectangle {x1: 1, x2: 2, x3: 2, y1: 1, y2: 2, y3: 1}
+	rect := Rectangle{a: Coordinate{0, 7}, b: Coordinate{10, 0}}
+	printInfo(rect)
 
-	area := getReactArea(rect1)
-	fmt.Println("The area of the reactangle is", area)
-
-	perimeter := getReactPerimeter(rect1)
-	fmt.Println("The perimeter of the reactangle is", perimeter)
+	rect.a.y *= 2
+	rect.b.x *= 2
+	printInfo(rect)
 }
