@@ -19,8 +19,146 @@
 
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
+
+type Title string
+type Name string
+
+type LendRecord struct {
+	checkOut time.Time
+	checkIn time.Time
+}
+
+type Member struct {
+	name Name
+	books map[Title]LendRecord
+}
+
+type BookEntry struct {
+	total int
+	lended int
+}
+
+type Library struct {
+	members map[Name]Member
+	books map[Title]BookEntry
+}
+
+func printMemberAudit(member *Member) {
+	for title, lendRecord := range member.books {
+		var returnTime string
+
+		if lendRecord.checkIn.IsZero() {
+			returnTime = "[not returned yet]"
+		} else {
+			returnTime = lendRecord.checkIn.String()
+		}
+
+		fmt.Println(member.name, ":", title, ":",lendRecord.checkOut.String(), "through", returnTime)
+	}
+}
+
+func printMembersAudits(library *Library) {
+	for _, member := range library.members {
+		printMemberAudit(&member)
+	} 
+}
+
+func printLibraryBooks(library *Library) {
+	fmt.Println()
+	for title, book := range library.books {
+		fmt.Println(title, "/ total:", book.total, "/lended", book.lended)
+	}
+	fmt.Println()
+}
+
+func checkoutBook(library *Library, title Title, member *Member) bool {
+	book, found := library.books[title]
+
+	if !found {
+		fmt.Println("Book not found")
+		return false
+	}
+
+	if book.lended == book.total {
+		fmt.Println("No more books available")
+		return false
+	}
+
+	book.lended += 1
+	library.books[title] = book
+	member.books[title] = LendRecord{checkOut: time.Now()}
+	return true
+}
+
+func returnBook(library *Library, title Title, member *Member) bool {
+	book, found := library.books[title]
+
+	if !found {
+		fmt.Println("Book not found")
+		return false
+	}
+
+	lendRecord, found := member.books[title]
+	if !found {
+		fmt.Println("Member did not checkout this book")
+		return false
+	}
+
+	book.lended -= 1
+	library.books[title] = book
+
+	lendRecord.checkIn = time.Now()
+	member.books[title] = lendRecord
+	return true
+}
 
 func main() {
+	library := Library {
+		books: make(map[Title]BookEntry),
+		members: make(map[Name]Member),
+	}
 
+	library.books["My book 1"] = BookEntry{
+		total: 4,
+		lended: 0,
+	}
+	library.books["My book 2"] = BookEntry{
+		total: 2,
+		lended: 0,
+	}
+	library.books["My book 3"] = BookEntry{
+		total: 3,
+		lended: 0,
+	}
+	library.books["My book 4"] = BookEntry{
+		total: 41,
+		lended: 0,
+	}
+
+	library.members["Billy"] = Member{"Billy", map[Title]LendRecord{}}
+	library.members["Annie"] = Member{"Annie", map[Title]LendRecord{}}
+	library.members["Colt"] = Member{"Colt", map[Title]LendRecord{}}
+
+	fmt.Println("\nInitial:")
+	printLibraryBooks(&library)
+	printMembersAudits(&library)
+
+	member := library.members["Billy"]
+	checkedOut := checkoutBook(&library, "My book 1", &member)
+	fmt.Println("\nBook checked out")
+	if checkedOut {
+		printLibraryBooks(&library)
+		printMembersAudits(&library)
+	}
+
+	fmt.Println("\nBook returned")
+	returned := returnBook(&library, "My book 1", &member)
+	if returned {
+		printLibraryBooks(&library)
+		printMembersAudits(&library)
+	}
 }
