@@ -23,4 +23,7 @@ func main() {
 
 	fmt.Printf("Capitalized: %c\n", capitalized)
 	// result: Capitalized: [D B C A] or any other combination
+
+	// run 15 times: 
+	// for i in {1..15}; go run ./demo/goroutines
 }
