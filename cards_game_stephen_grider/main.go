@@ -1,10 +1,12 @@
 package main
 
+import "fmt"
+
 func main() {
 	// append does not modifies the existing slice but returns a new one
 	// cards = append(cards, card)
-	cards := newDeck()
-	cards.saveToFile("mycards")
+	// cards := newDeck()
+	fmt.Println(newDeckFromFile("mycards"))
 	
 	//hand, ramainingCards := deal(cards, 5)
 	//cards.print()
