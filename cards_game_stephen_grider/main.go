@@ -1,20 +1,20 @@
 package main
 
-import "fmt"
-
 func main() {
-	// cards := deck {"Ace of Spades", newCard()}
-	// card := newCard()
 	// append does not modifies the existing slice but returns a new one
 	// cards = append(cards, card)
 	cards := newDeck()
-	hand, ramainingCards := deal(cards, 5)
+	cards.saveToFile("mycards")
+	
+	//hand, ramainingCards := deal(cards, 5)
 	//cards.print()
 
-	hand.print()
-	ramainingCards.print()
-	fmt.Println("---")
-	cards.print()
+	// hand.print()
+	// fmt.Println("---")
+	// ramainingCards.print()
+
+	//greeting := "Hi there!"
+	// []byte(greeting) //convert string to byte slice
 }
 
 // func newCard() string {
