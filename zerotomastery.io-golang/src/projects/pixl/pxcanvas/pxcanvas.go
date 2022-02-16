@@ -25,7 +25,7 @@ type PxCanvas struct {
 	reloadImage bool
 }
 
-func (pxCanvas *PxCanvas) bounds() image.Rectangle {
+func (pxCanvas *PxCanvas) Bounds() image.Rectangle {
 	x0 := int(pxCanvas.CanvasOffset.X)
 	y0 := int(pxCanvas.CanvasOffset.Y)
 	x1 := int(pxCanvas.PxCols * pxCanvas.PxSize + int(pxCanvas.CanvasOffset.X))
@@ -95,7 +95,38 @@ func (pxCanvas *PxCanvas) CreateRenderer() fyne.WidgetRenderer {
 
 func (pxCanvas *PxCanvas) TryPan(previousCoord *fyne.PointEvent, ev *desktop.MouseEvent) {
 	// PointEvent is mouse location
-	if previousCoord != nil && ev.Button == desktop.MouseButtonTertiary { //Mouse scroll
+	if previousCoord != nil && ev.Button == desktop.MouseButtonPrimary { //Mouse right button
 		pxCanvas.Pan(*previousCoord, ev.PointEvent)
 	}
+}
+
+// Brushable Interface
+
+func (pxCanvas *PxCanvas) SetColor(c color.Color, x,  y int) {
+	if nrgba, ok := pxCanvas.PixelData.(*image.NRGBA); ok {
+		nrgba.Set(x, y, c)
+	}
+
+	if rgba, ok := pxCanvas.PixelData.(*image.RGBA); ok {
+		rgba.Set(x, y, c)
+	}
+
+	pxCanvas.Refresh()
+}
+
+func (pxCanvas *PxCanvas) MouseToCanvasXY(ev *desktop.MouseEvent) (*int, *int) {
+	bounds := pxCanvas.Bounds()
+
+	if !InBounds(ev.Position, bounds) {
+		return nil, nil
+	}
+
+	pxSize := float32(pxCanvas.PxSize)
+	xOffset := pxCanvas.CanvasOffset.X
+	yOffset := pxCanvas.CanvasOffset.Y
+
+	x := int((ev.Position.X - xOffset) / pxSize)
+	y := int((ev.Position.Y - yOffset) / pxSize)
+
+	return &x, &y
 }
