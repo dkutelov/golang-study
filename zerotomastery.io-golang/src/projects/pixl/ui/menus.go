@@ -5,6 +5,8 @@ import (
 	"strconv"
 
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/widget"
 )
 
 func BuildNewMenu(app *AppInit) *fyne.MenuItem {
@@ -21,5 +23,52 @@ func BuildNewMenu(app *AppInit) *fyne.MenuItem {
 			}
 			return nil
 		}
+
+
+		// Create new text entries
+		widthEntry := widget.NewEntry()
+		widthEntry.Validator = sizeValidator
+
+		heightEntry := widget.NewEntry()
+		heightEntry.Validator = sizeValidator
+
+		widthFromEntry := widget.NewFormItem("Width", widthEntry)
+		heightFormEntry := widget.NewFormItem("Height", heightEntry)
+
+		formItems := []*widget.FormItem{widthFromEntry, heightFormEntry}
+
+		dialog.ShowForm("New Image", "Create", "Cancel", formItems, func(ok bool){
+			if ok {
+				pixelWidth := 0
+				pixelHeight := 0
+
+				if widthEntry.Validate() != nil {
+					dialog.ShowError(errors.New("invalid width"), app.PixlWindow)
+				} else {
+					pixelWidth, _ = strconv.Atoi(widthEntry.Text)
+				}
+
+				if heightEntry.Validate() != nil {
+					dialog.ShowError(errors.New("invalid height"), app.PixlWindow)
+				} else {
+					pixelHeight, _ = strconv.Atoi(heightEntry.Text)
+				}
+
+				app.PixlCanvas.NewDrawing(pixelWidth, pixelHeight)
+			}
+		},  app.PixlWindow)
 	})
+}
+
+func BuildMenus(app *AppInit) *fyne.Menu {
+	return fyne.NewMenu(
+		"File",
+		BuildNewMenu(app), // returns menu item
+	)
+}
+
+func SetupMenus(app *AppInit) {
+	menus := BuildMenus(app)
+	mainMenu := fyne.NewMainMenu(menus)
+	app.PixlWindow.SetMainMenu(mainMenu)
 }
